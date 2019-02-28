@@ -19,13 +19,15 @@ if __name__ == '__main__':
     # Get objects from input file
     inputReader = InputReader(file_path)
 
-    slideshow_maker = SlideshowMaker()
+    output = None
     output_horizontal = slideshow_maker.greedy_horizontal_make(inputReader.photos)
     output_horizontal_reverse = slideshow_maker.greedy_reverse_horizontal_make(inputReader.photos)
     output_vertical = slideshow_maker.greedy_vertical_make(inputReader.photos)
 
     if len(output_horizontal_reverse) > len(output_horizontal):
         output_horizontal = output_horizontal_reverse
+    from search_by_tag import search_by_tag
+    search_by_tag(inputReader.photos)
 
     output = output_horizontal + output_vertical
     print('found solution with', len(output), 'slides')
