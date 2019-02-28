@@ -12,6 +12,8 @@ class InputReader:
         photo_id = 0
         first_line = True
         for line in file:
+            line = line.strip()
+
             # print(line)
             if first_line:
                 first_line = False

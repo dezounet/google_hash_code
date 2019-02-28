@@ -28,4 +28,4 @@ if __name__ == '__main__':
     output_file = os.path.splitext(input_file)[0] + '.out'
     out_path = os.path.join(OUTPUT_DIRECTORY, output_file)
 
-    # write(out_path)
+    write(output, out_path)
