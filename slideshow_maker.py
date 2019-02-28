@@ -1,3 +1,6 @@
+from slide import Slide
+
+
 class SlideshowMaker(object):
     def __init__(self):
         # Maybe this will be useful
@@ -6,7 +9,10 @@ class SlideshowMaker(object):
     def greedy_make(self, pics):
         slideshow = None
 
+        current_slide = None
+
         for i, pic in pics.items():
-            pass
+            if current_slide is None:
+                current_slide = Slide(pic, None)
 
         return slideshow
