@@ -7,6 +7,7 @@ from config import OUTPUT_DIRECTORY
 from read import read
 from write import write
 
+from slideshow_maker import SlideshowMaker
 
 if __name__ == '__main__':
     # Get input file from command line arg list
@@ -17,7 +18,8 @@ if __name__ == '__main__':
     # Get objects from input file
     input = read(file_path)
 
-    # TODO
+    slideshow_maker = SlideshowMaker()
+    output = slideshow_maker.greedy_make(input)
 
     # Save result to output file
     output_file = os.path.splitext(input_file)[0] + '.out'
