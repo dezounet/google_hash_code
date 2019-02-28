@@ -27,7 +27,7 @@ if __name__ == '__main__':
     if len(output_horizontal_reverse) > len(output_horizontal):
         output_horizontal = output_horizontal_reverse
     from search_by_tag import search_by_tag
-    search_by_tag(inputReader.photos)
+    output = search_by_tag(inputReader.photos)
 
     output = output_horizontal + output_vertical
     print('found solution with', len(output), 'slides')

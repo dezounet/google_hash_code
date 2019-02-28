@@ -31,7 +31,7 @@ class InputReader:
                 number_tags = line_splited.pop(0)
                 tags = set(line_splited)
                 self.photos[photo_id] = Photo(photo_id, orientation, tags)
-                photo_id += 1;
+                photo_id += 1
 
                 #self.orientation_counter[orientation] += 1
                 #for tag in tags:
