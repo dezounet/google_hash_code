@@ -61,15 +61,17 @@ class SlideshowMaker(object):
         current_slide = None
 
         for i, pic in pics.items():
-            # First, only Horizontal
-            if pic.orientation == 1:
+            # First, only Vertical
+            if pic.orientation == 0:
                 continue
 
             if current_slide is None:
                 current_slide = Slide(pic, None)
                 continue
+            else:
+                current_slide.pic_b = pic
 
-            if current_slide.is_valid():  # Horizontal
+            if current_slide.is_valid():
                 if previous_slide is None:
                     slideshow.append(current_slide)
                     previous_slide = current_slide
@@ -78,5 +80,6 @@ class SlideshowMaker(object):
                         # Ok, current slide is valid, add it to slideshow
                         slideshow.append(current_slide)
                         previous_slide = current_slide
+                current_slide = None
 
         return slideshow
