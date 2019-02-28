@@ -4,8 +4,9 @@ import os
 from config import INPUT_DIRECTORY
 from config import OUTPUT_DIRECTORY
 
-from read import read
+#from read import read
 from write import write
+from InputReader import InputReader
 
 
 if __name__ == '__main__':
@@ -15,7 +16,7 @@ if __name__ == '__main__':
     assert os.path.exists(file_path)
 
     # Get objects from input file
-    input = read(file_path)
+    inputReader = InputReader(file_path)
 
     # TODO
 
@@ -23,4 +24,4 @@ if __name__ == '__main__':
     output_file = os.path.splitext(input_file)[0] + '.out'
     out_path = os.path.join(OUTPUT_DIRECTORY, output_file)
 
-    write(out_path)
+    #write(out_path)
