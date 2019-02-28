@@ -20,7 +20,11 @@ if __name__ == '__main__':
     inputReader = InputReader(file_path)
 
     slideshow_maker = SlideshowMaker()
-    output = slideshow_maker.greedy_make(inputReader.photos)
+    output = slideshow_maker.greedy_horizontal_make(inputReader.photos)
+    output_reverse = slideshow_maker.greedy_reverse_horizontal_make(inputReader.photos)
+
+    if len(output_reverse) > len(output):
+        output = output_reverse
 
     print('found solution with', len(output), 'slides')
 
