@@ -4,4 +4,4 @@ class Photo:
         self.id = id
         self.tags = tags
         self.orientation = orientation
-        print(f'Create photo id={self.id} orientation={self.orientation} tags={self.tags}')
+        # print(f'Create photo id={self.id} orientation={self.orientation} tags={self.tags}')

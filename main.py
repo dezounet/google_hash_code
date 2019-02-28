@@ -4,7 +4,7 @@ import os
 from config import INPUT_DIRECTORY
 from config import OUTPUT_DIRECTORY
 
-#from read import read
+# from read import read
 from write import write
 from InputReader import InputReader
 
@@ -20,10 +20,12 @@ if __name__ == '__main__':
     inputReader = InputReader(file_path)
 
     slideshow_maker = SlideshowMaker()
-    output = slideshow_maker.greedy_make(input)
+    output = slideshow_maker.greedy_make(inputReader.photos)
+
+    print('found solution with', len(output), 'slides')
 
     # Save result to output file
     output_file = os.path.splitext(input_file)[0] + '.out'
     out_path = os.path.join(OUTPUT_DIRECTORY, output_file)
 
-    #write(out_path)
+    # write(out_path)
