@@ -2,7 +2,7 @@ from Photo import Photo;
 
 class InputReader:
 
-    photos = []
+    photos = {}
 
     def __init__(self, path: str) -> None:
         print(f'Read input {path}')
@@ -14,7 +14,6 @@ class InputReader:
             if first_line:
                 first_line = False
             else:
-                photo_id += 1;
                 line_splited = list(line.split(' '))
                 orientation_line = line_splited.pop(0)
                 orientation = 0
@@ -22,5 +21,6 @@ class InputReader:
                 number_tags = line_splited.pop(0)
                 tags = set(line_splited)
 
-                self.photos.append(Photo(photo_id, orientation, tags))
+                self.photos[photo_id] = Photo(photo_id, orientation, tags)
+                photo_id += 1;
         file.close()
