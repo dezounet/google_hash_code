@@ -1,5 +1,7 @@
+from collections import defaultdict
+
 from slide import Slide
-from Photo import Photo
+
 
 def search_by_tag(dict_pics):
     """
@@ -8,15 +10,22 @@ def search_by_tag(dict_pics):
     :return:
     """
     pictures_per_tag = format_input(dict_pics)
-    remaining_picture_ids = set(dict_pics.keys())
+    print('total tag count:', len(pictures_per_tag))
 
+    # Filter tag with only one pic
+    pictures_per_tag = {k: v for k, v in pictures_per_tag.items() if len(v) > 1}
+    print('useful tag count:', len(pictures_per_tag))
+
+    # get first pic
+
+    remaining_picture_ids = set(dict_pics.keys())
     first_picture_id = list(pictures_per_tag.values())[0][0]
     first_picture = dict_pics[first_picture_id]
     remove_pictures_from_dict(first_picture, pictures_per_tag)
     remaining_picture_ids.remove(first_picture_id)
     slideshow = [Slide(first_picture)]
-    is_remaining_picture = True
 
+    is_remaining_picture = True
     while is_remaining_picture:
         next_picture_id = get_next_picture(first_picture, pictures_per_tag)
         if next_picture_id:
@@ -47,8 +56,12 @@ def format_input(dict_pics):
     :return:
     """
     pictures = dict_pics.values()
-    all_tags = set.union(*[p.tags for p in pictures])
-    pictures_per_tags = {tag: get_picture_ids_w_tag(pictures, tag) for tag in all_tags}
+
+    pictures_per_tags = defaultdict(set)
+
+    for pic in pictures:
+        for tag in pic.tags:
+            pictures_per_tags[tag].add(pic.id)
 
     return pictures_per_tags
 
