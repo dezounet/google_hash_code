@@ -53,16 +53,19 @@ def get_current_best_score():
             with open(os.path.join(OUTPUT_DIRECTORY, output_filename)) as f:
                 header = f.readline()
 
-                output_ids = []
+                output = []
                 for line in f.readlines():
                     line = line.strip()
                     if line:
-                        output_ids.append(int(line))
+                        pic_1_2 = line.split(' ')
 
-            # Recreate solution
-            output = []
-            for id in output_ids:
-                output.append(Slide(pics[id]))
+                        pic_1 = pics[int(pic_1_2[0])]
+                        if len(pic_1_2) > 1:
+                            pic_2 = pics[int(pic_1_2[1])]
+                        else:
+                            pic_2 = None
+
+                        output.append(Slide(pic_1, pic_2))
 
             # Score solution
             current_score = slideshow_score(output)
