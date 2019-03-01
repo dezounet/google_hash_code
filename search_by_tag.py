@@ -2,25 +2,19 @@ from collections import defaultdict
 
 from slide import Slide
 
-import random
 from random import randint
 
 
-def search_by_tag(dict_pics):
+def search_by_tag(dict_pics, pictures_per_tag):
     """
 
     :param dict_pics: dict of Pictures with ids as keys
     :return:
     """
-    # horizontal
-    dict_pics = {k: v for k, v in dict_pics.items() if v.orientation == 0}
 
-    pictures_per_tag = format_input(dict_pics)
-    # print('total tag count:', len(pictures_per_tag))
-
-    # Filter tag with only one pic
-    pictures_per_tag = {k: v for k, v in pictures_per_tag.items() if len(v) > 1}
-    # print('useful tag count:', len(pictures_per_tag))
+    available_tag = set(pictures_per_tag.keys())
+    for i, pic in dict_pics.items():
+        pic.tags = pic.tags & available_tag
 
     # get first pic
     pic = None
@@ -28,18 +22,18 @@ def search_by_tag(dict_pics):
     while pic is None:
         pic = dict_pics.get(randint(0, size))
 
-    remove_pictures_from_dict(pic, pictures_per_tag)
+    pictures_per_tag = remove_pictures_from_dict(pic, pictures_per_tag)
 
     # initialize slides
     slideshow = [Slide(pic)]
 
     is_remaining_picture = True
     while is_remaining_picture:
-        next_pic_id = get_next_picture(pic, pictures_per_tag)
+        next_pic_id = get_next_picture(pic, pictures_per_tag, dict_pics)
 
-        if next_pic_id:
+        if next_pic_id is not None:
             next_pic = dict_pics[next_pic_id]
-            remove_pictures_from_dict(next_pic, pictures_per_tag)
+            pictures_per_tag = remove_pictures_from_dict(next_pic, pictures_per_tag)
 
             slideshow.append(Slide(next_pic))
 
@@ -61,10 +55,13 @@ def remove_pictures_from_dict(picture, pictures_per_tag):
             pictures_per_tag[tag].remove(picture.id)
 
             # remove empty keys
-            if not pictures_per_tag[tag]:
+            if len(pictures_per_tag[tag]) == 0:
                 del pictures_per_tag[tag]
+
         except KeyError:
             pass
+
+    return pictures_per_tag
 
 
 def format_input(dict_pics):
@@ -81,26 +78,39 @@ def format_input(dict_pics):
         for tag in pic.tags:
             pictures_per_tags[tag].add(pic.id)
 
+    pictures_per_tags = dict(pictures_per_tags)
     return pictures_per_tags
 
 
-def get_next_picture(picture, pictures_per_tag):
+def get_next_picture(picture, pictures_per_tag, remaining_id):
     """
 
     :param picture:
     :param pictures_per_tag:
     :return:
     """
+
     potential_next_picture_tags = picture.tags & set(pictures_per_tag)
     if len(potential_next_picture_tags) == 0:
+        print('stooooop!')
         return None
 
+    eligible_ids = []
     for tag in potential_next_picture_tags:
-        try:
-            choice = random.choice(tuple(pictures_per_tag[tag]))
-            pictures_per_tag[tag].remove(choice)
-            return choice
-        except KeyError:
-            pass
+        eligible_ids += list(pictures_per_tag[tag])
 
-    return None
+    next_id = None
+    current_len = 0
+
+    eligible_ids = set(eligible_ids)
+    for id in eligible_ids:
+        if current_len < len(remaining_id[id].tags):
+            current_len = len(remaining_id[id].tags)
+            next_id = id
+
+    if next_id is not None:
+        print('continuing!')
+        return next_id
+    else:
+        print('stooooop!')
+        return None
