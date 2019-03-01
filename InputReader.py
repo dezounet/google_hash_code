@@ -3,12 +3,12 @@ import collections;
 
 
 class InputReader:
-    photos = {}
 
     # tags_counter = collections.Counter();
     # orientation_counter = collections.Counter();
 
     def __init__(self, path: str) -> None:
+        self.photos = {}
         # print(f'Read input {path}')
 
         file = open(path, 'r')
