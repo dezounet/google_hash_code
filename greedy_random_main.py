@@ -7,6 +7,8 @@ from config import OUTPUT_DIRECTORY
 from InputReader import InputReader
 from write import write
 
+from slide import Slide
+
 from vertical_merger import merge
 from slideshow_maker import SlideshowMaker
 
@@ -36,8 +38,17 @@ if __name__ == '__main__':
 
     print('Trying to sort %s H pics, %s V pics...' % (len(horizontal_pics_id), len(vertical_pics)))
 
+    # horizontal slide
+    horizontal_slides = {}
+    for i, pic in horizontal_pics.items():
+        horizontal_slides[i] = Slide(pic)
+
     # Match vertical pics together
     vertical_slides = merge(vertical_pics)
+
+    slides = {}
+    slides.update(horizontal_slides)
+    slides.update(vertical_slides)
 
     # Do better
     output = []
@@ -47,8 +58,7 @@ if __name__ == '__main__':
     i = 0
     while keep_going:
         try:
-            # current_output = SlideshowMaker().greedy_vertical_make(pics)
-            current_output = SlideshowMaker().greedy_random_vertical_make(pics)
+            current_output = SlideshowMaker().greedy_random_make(slides)
             current_score = slideshow_score(current_output)
 
             if best_score < current_score:

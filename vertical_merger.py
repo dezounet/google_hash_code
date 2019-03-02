@@ -3,9 +3,22 @@ from copy import copy
 
 from slide import Slide
 
+FACTOR = 10000000
+
+
+def merge_id(id_1, id_2):
+    return id_1 + id_2 * FACTOR
+
+
+def unmerge_id(merged_id):
+    id_1 = merged_id % FACTOR
+    id_2 = (merged_id - id_1) / FACTOR
+
+    return int(id_1), int(id_2)
+
 
 def merge(vertical_pics):
-    slides = []
+    slides = {}
 
     # Do not update input struct
     vertical_pics_copy = copy(vertical_pics)
@@ -29,7 +42,7 @@ def merge(vertical_pics):
 
             if second_pic is not None:
                 del vertical_pics_copy[second_pic.id]
-                slides.append(Slide(first_pic, second_pic))
+                slides[merge_id(first_pic.id, second_pic.id)] = Slide(first_pic, second_pic)
             else:
                 unmatched_pics[first_pic.id] = first_pic
 
@@ -52,6 +65,11 @@ def merge(vertical_pics):
 
             del unmatched_pics[second_pic.id]
 
-            slides.append(Slide(first_pic, second_pic))
+            slides[merge_id(first_pic.id, second_pic.id)] = Slide(first_pic, second_pic)
 
     return slides
+
+
+if __name__ == '__main__':
+    merged_id = merge_id(1, 80000)
+    print(unmerge_id(merged_id))

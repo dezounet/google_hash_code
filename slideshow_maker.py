@@ -34,30 +34,6 @@ class SlideshowMaker(object):
 
         return slideshow
 
-    def greedy_reverse_horizontal_make(self, pics):
-        slideshow = []
-
-        previous_slide = None
-
-        for i, pic in sorted(pics.items(), key=lambda x: x[0], reverse=True):
-            # First, only Horizontal
-            if pic.orientation == 1:
-                continue
-
-            current_slide = Slide(pic, None)
-
-            if current_slide.is_valid():  # Horizontal
-                if previous_slide is None:
-                    slideshow.append(current_slide)
-                    previous_slide = current_slide
-                else:
-                    if transition_score(current_slide, previous_slide):
-                        # Ok, current slide is valid, add it to slideshow
-                        slideshow.append(current_slide)
-                        previous_slide = current_slide
-
-        return slideshow
-
     def greedy_random_horizontal_make(self, pics):
         slideshow = []
 
@@ -190,5 +166,85 @@ class SlideshowMaker(object):
                 for slide in current_slideshow:
                     del pics_copy[slide.pic_a.id]
                     del pics_copy[slide.pic_b.id]
+
+        return slideshow
+
+    def greedy_random_make(self, slides):
+        slideshow = []
+
+        previous_slide = None
+
+        slides = copy.copy(slides)
+
+        keep_going = True
+        while keep_going:
+            current_slideshow = []
+
+            index = list(list(slides.keys()))
+            random.shuffle(index)
+
+            for i in index:
+                slide = slides[i]
+
+                if previous_slide is None:
+                    slideshow.append(slide)
+                    current_slideshow.append(i)
+
+                    previous_slide = slide
+                else:
+                    if transition_score(slide, previous_slide):
+                        # Ok, current slide is valid, add it to slideshow
+                        slideshow.append(slide)
+                        current_slideshow.append(i)
+
+                        previous_slide = slide
+
+            if not current_slideshow:
+                # Stop when no more slideshow found
+                keep_going = False
+            else:
+                # print('Adding %s slides' % len(current_slideshow))
+                for slide_id in current_slideshow:
+                    del slides[slide_id]
+
+        return slideshow
+
+    def greedy_best_make(self, slides):
+        slideshow = []
+
+        previous_slide = None
+
+        slides = copy.copy(slides)
+
+        keep_going = True
+        while keep_going:
+            current_slideshow = []
+
+            index = list(list(slides.keys()))
+            random.shuffle(index)
+
+            for i in index:
+                slide = slides[i]
+
+                if previous_slide is None:
+                    slideshow.append(slide)
+                    current_slideshow.append(i)
+
+                    previous_slide = slide
+                else:
+                    if transition_score(slide, previous_slide):
+                        # Ok, current slide is valid, add it to slideshow
+                        slideshow.append(slide)
+                        current_slideshow.append(i)
+
+                        previous_slide = slide
+
+            if not current_slideshow:
+                # Stop when no more slideshow found
+                keep_going = False
+            else:
+                # print('Adding %s slides' % len(current_slideshow))
+                for slide_id in current_slideshow:
+                    del slides[slide_id]
 
         return slideshow
