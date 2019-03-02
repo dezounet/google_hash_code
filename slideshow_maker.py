@@ -212,39 +212,38 @@ class SlideshowMaker(object):
     def greedy_best_make(self, slides):
         slideshow = []
 
-        previous_slide = None
-
         slides = copy.copy(slides)
+
+        # Randomly pick first pick
+        index = list(slides.keys())
+        starting_index = random.choice(index)
+        previous_slide = slides.pop(starting_index)
+        slideshow.append(previous_slide)
 
         keep_going = True
         while keep_going:
-            current_slideshow = []
+            current_slide_id = self._find_best_transition(slides, previous_slide)
 
-            index = list(list(slides.keys()))
-            random.shuffle(index)
-
-            for i in index:
-                slide = slides[i]
-
-                if previous_slide is None:
-                    slideshow.append(slide)
-                    current_slideshow.append(i)
-
-                    previous_slide = slide
-                else:
-                    if transition_score(slide, previous_slide):
-                        # Ok, current slide is valid, add it to slideshow
-                        slideshow.append(slide)
-                        current_slideshow.append(i)
-
-                        previous_slide = slide
-
-            if not current_slideshow:
+            if current_slide_id is None:
                 # Stop when no more slideshow found
                 keep_going = False
             else:
-                # print('Adding %s slides' % len(current_slideshow))
-                for slide_id in current_slideshow:
-                    del slides[slide_id]
+                slideshow.append(slides[current_slide_id])
+
+                previous_slide = slides[current_slide_id]
+                del slides[current_slide_id]
 
         return slideshow
+
+    def _find_best_transition(self, slides, previous_slide):
+        best_transition = 0
+        best_slide_id = None
+
+        for i, current_slide in slides.items():
+            current_transition = transition_score(previous_slide, current_slide)
+
+            if current_transition > best_transition:
+                best_transition = current_transition
+                best_slide_id = i
+
+        return best_slide_id
