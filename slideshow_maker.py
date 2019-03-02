@@ -1,6 +1,8 @@
 import random
+import copy
 
 from slide import Slide
+from score import transition_score
 
 
 class SlideshowMaker(object):
@@ -25,7 +27,7 @@ class SlideshowMaker(object):
                     slideshow.append(current_slide)
                     previous_slide = current_slide
                 else:
-                    if current_slide.tags & previous_slide.tags:
+                    if transition_score(current_slide, previous_slide):
                         # Ok, current slide is valid, add it to slideshow
                         slideshow.append(current_slide)
                         previous_slide = current_slide
@@ -49,7 +51,7 @@ class SlideshowMaker(object):
                     slideshow.append(current_slide)
                     previous_slide = current_slide
                 else:
-                    if current_slide.tags & previous_slide.tags:
+                    if transition_score(current_slide, previous_slide):
                         # Ok, current slide is valid, add it to slideshow
                         slideshow.append(current_slide)
                         previous_slide = current_slide
@@ -78,7 +80,7 @@ class SlideshowMaker(object):
                     slideshow.append(current_slide)
                     previous_slide = current_slide
                 else:
-                    if current_slide.tags & previous_slide.tags:
+                    if transition_score(current_slide, previous_slide):
                         # Ok, current slide is valid, add it to slideshow
                         slideshow.append(current_slide)
                         previous_slide = current_slide
@@ -91,26 +93,102 @@ class SlideshowMaker(object):
         previous_slide = None
         current_slide = None
 
-        for i, pic in pics.items():
-            # First, only Vertical
-            if pic.orientation == 0:
-                continue
+        pics_copy = copy.copy(pics)
+        keep_going = True
 
-            if current_slide is None:
-                current_slide = Slide(pic, None)
-                continue
-            else:
-                current_slide.pic_b = pic
+        while keep_going:
+            current_slideshow = []
 
-            if current_slide.is_valid():
-                if previous_slide is None:
-                    slideshow.append(current_slide)
-                    previous_slide = current_slide
+            for i, pic in pics_copy.items():
+                # First, only Vertical
+                if pic.orientation == 0:
+                    continue
+
+                if current_slide is None:
+                    current_slide = Slide(pic, None)
+                    continue
                 else:
-                    if current_slide.tags & previous_slide.tags:
-                        # Ok, current slide is valid, add it to slideshow
+                    current_slide.add(pic)
+
+                if current_slide.is_valid():
+                    if previous_slide is None:
                         slideshow.append(current_slide)
+                        current_slideshow.append(current_slide)
+
                         previous_slide = current_slide
-                current_slide = None
+                    else:
+                        if transition_score(current_slide, previous_slide):
+                            # Ok, current slide is valid, add it to slideshow
+                            slideshow.append(current_slide)
+                            current_slideshow.append(current_slide)
+
+                            previous_slide = current_slide
+
+                    current_slide = None
+
+            if not current_slideshow:
+                # Stop when no more slideshow found
+                keep_going = False
+            else:
+                # print('Adding %s slides' % len(current_slideshow))
+                for slide in current_slideshow:
+                    del pics_copy[slide.pic_a.id]
+                    del pics_copy[slide.pic_b.id]
+
+        return slideshow
+
+    def greedy_random_vertical_make(self, pics):
+        slideshow = []
+
+        previous_slide = None
+        current_slide = None
+
+        pics_copy = copy.copy(pics)
+        keep_going = True
+
+        # print('Starting greedy slideshow maker...')
+        while keep_going:
+            current_slideshow = []
+
+            index = list(pics_copy.keys())
+            random.shuffle(index)
+
+            for i in index:
+                pic = pics_copy[i]
+
+                # First, only Vertical
+                if pic.orientation == 0:
+                    continue
+
+                if current_slide is None:
+                    current_slide = Slide(pic, None)
+                    continue
+                else:
+                    current_slide.add(pic)
+
+                if current_slide.is_valid():
+                    if previous_slide is None:
+                        slideshow.append(current_slide)
+                        current_slideshow.append(current_slide)
+
+                        previous_slide = current_slide
+                    else:
+                        if transition_score(current_slide, previous_slide):
+                            # Ok, current slide is valid, add it to slideshow
+                            slideshow.append(current_slide)
+                            current_slideshow.append(current_slide)
+
+                            previous_slide = current_slide
+
+                    current_slide = None
+
+            if not current_slideshow:
+                # Stop when no more slideshow found
+                keep_going = False
+            else:
+                # print('Adding %s slides' % len(current_slideshow))
+                for slide in current_slideshow:
+                    del pics_copy[slide.pic_a.id]
+                    del pics_copy[slide.pic_b.id]
 
         return slideshow

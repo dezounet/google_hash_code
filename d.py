@@ -1,6 +1,5 @@
 import sys
 import os
-import random
 
 from config import INPUT_DIRECTORY
 from config import OUTPUT_DIRECTORY
@@ -8,11 +7,8 @@ from config import OUTPUT_DIRECTORY
 from InputReader import InputReader
 from write import write
 
-from slide import Slide
-from count import get_pics_per_tags
-
-from graph import build_graph
-from graph import crawl_graph
+from vertical_merger import merge
+from slideshow_maker import SlideshowMaker
 
 from score import get_current_best_score
 from score import slideshow_score
@@ -32,13 +28,16 @@ if __name__ == '__main__':
     inputReader = InputReader(file_path)
     pics = inputReader.photos
 
-    # Filter on horizontal pics
-    # TODO: replace this by a vertical merge function
-    pics = {k: v for k, v in pics.items() if v.orientation == 0}
-    pics_id = list(pics.keys())
+    horizontal_pics = {k: v for k, v in pics.items() if v.orientation == 0}
+    horizontal_pics_id = list(horizontal_pics.keys())
 
-    # Get pics per tag index
-    pics_per_tag = get_pics_per_tags(pics)
+    vertical_pics = {k: v for k, v in pics.items() if v.orientation == 1}
+    vertical_pics_id = list(vertical_pics.keys())
+
+    print('Trying to sort %s H pics, %s V pics...' % (len(horizontal_pics_id), len(vertical_pics)))
+
+    # Match vertical pics together
+    vertical_slides = merge(vertical_pics)
 
     # Do better
     output = []
@@ -48,23 +47,8 @@ if __name__ == '__main__':
     i = 0
     while keep_going:
         try:
-            # Minimalistic progress bar
-            print('.', end='', flush=True)
-            if i % 100 == 0 and i != 0:
-                print()
-            i += 1
-
-            current_output = []
-
-            # Build graph
-            graph = build_graph(pics, pics_per_tag)
-
-            starting_node = random.choice(pics_id)
-            path = crawl_graph(graph, starting_node)
-
-            for uid in path:
-                current_output.append(Slide(pics[uid]))
-
+            # current_output = SlideshowMaker().greedy_vertical_make(pics)
+            current_output = SlideshowMaker().greedy_random_vertical_make(pics)
             current_score = slideshow_score(current_output)
 
             if best_score < current_score:
@@ -72,6 +56,9 @@ if __name__ == '__main__':
                 print('Found a better solution (+%s)' % (current_score - best_score))
                 output = current_output
                 best_score = current_score
+            else:
+                print(
+                    'Better solution not found: %s (len: %s) < %s)' % (current_score, len(current_output), best_score))
 
         except KeyboardInterrupt:
             keep_going = False

@@ -15,10 +15,6 @@ class Slide(object):
         return (self.pic_a.orientation == 0 and pic_b is None) or \
                (self.pic_a.orientation == 1 and pic_b.orientation == 1)
 
-    def can_add(self, pic_b):
-        output = False
-
-        if self.pic_b is None and self.is_valid(pic_b):
-            output = True
-
-        return output
+    def add(self, pic_b):
+        self.pic_b = pic_b
+        self.tags = self.tags.union(pic_b.tags)
