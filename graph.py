@@ -82,14 +82,11 @@ def build_graph(pics, pics_per_tag):
     graph = Graph()
 
     # Add node to graph
-    print('Adding nodes to graph...')
     for uid, pic in pics.items():
         node = Node(uid, Slide(pic))
         graph.add_node(node)
-    print('Nodes added to graph.')
 
     # Link nodes in graph
-    print('Adding links to graph...')
     for tag, tag_pics in pics_per_tag.items():
         for pic_id_1 in tag_pics:
             pic_1 = pics[pic_id_1]
@@ -99,7 +96,6 @@ def build_graph(pics, pics_per_tag):
 
                 if pic_id_1 != pic_id_2:
                     graph.add_link(pic_1.id, pic_2.id)
-    print('Links added to graph.')
 
     return graph
 

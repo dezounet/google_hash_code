@@ -45,9 +45,14 @@ if __name__ == '__main__':
 
     print('Starting computation...')
     keep_going = True
+    i = 0
     while keep_going:
         try:
             # Minimalistic progress bar
+            print('.', end='', flush=True)
+            if i % 100 == 0 and i != 0:
+                print()
+            i += 1
 
             current_output = []
 
@@ -63,12 +68,14 @@ if __name__ == '__main__':
             current_score = slideshow_score(current_output)
 
             if best_score < current_score:
+                print()
                 print('Found a better solution (+%s)' % (current_score - best_score))
                 output = current_output
                 best_score = current_score
 
         except KeyboardInterrupt:
             keep_going = False
+            print()
 
     # Save result to output file only if better solution found
     if initial_best_score < best_score:
