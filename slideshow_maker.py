@@ -240,10 +240,15 @@ class SlideshowMaker(object):
         best_slide_id = None
 
         for i, current_slide in slides.items():
+            max_target_score = int(len(previous_slide.tags) / 2)
+
             current_transition = transition_score(previous_slide, current_slide)
 
             if current_transition > best_transition:
                 best_transition = current_transition
                 best_slide_id = i
+
+            if best_transition >= max_target_score:
+                break
 
         return best_slide_id

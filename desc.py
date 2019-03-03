@@ -23,7 +23,7 @@ if __name__ == '__main__':
         std_dev = math.sqrt(variance)
 
         best_mean_score = mean / 3
-        max_score = best_mean_score * sum_of_numbers
+        max_score = best_mean_score * count
 
         with open(filename, 'w') as f:
             f.write('%s %s %s %s\n' % (mean, std_dev, best_mean_score, max_score))
