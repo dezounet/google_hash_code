@@ -33,9 +33,10 @@ if __name__ == '__main__':
     pics = inputReader.photos
 
     # Filter on horizontal pics
-    # TODO: replace this by a vertical merge function
     pics = {k: v for k, v in pics.items() if v.orientation == 0}
     pics_id = list(pics.keys())
+
+    print('Trying to sort %s H pics...' % len(pics_id))
 
     # Get pics per tag index
     pics_per_tag = get_pics_per_tags(pics)
@@ -48,12 +49,6 @@ if __name__ == '__main__':
     i = 0
     while keep_going:
         try:
-            # Minimalistic progress bar
-            print('.', end='', flush=True)
-            if i % 100 == 0 and i != 0:
-                print()
-            i += 1
-
             current_output = []
 
             # Build graph
@@ -72,6 +67,9 @@ if __name__ == '__main__':
                 print('Found a better solution (+%s)' % (current_score - best_score))
                 output = current_output
                 best_score = current_score
+            else:
+                print(
+                    'Better solution not found: %s (len: %s) < %s)' % (current_score, len(current_output), best_score))
 
         except KeyboardInterrupt:
             keep_going = False
