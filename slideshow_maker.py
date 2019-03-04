@@ -221,7 +221,11 @@ class SlideshowMaker(object):
         slideshow.append(previous_slide)
 
         keep_going = True
+        i = 0
         while keep_going:
+            if i % 1000 == 0 and i != 0:
+                print('current slideshow is %s long...' % i)
+
             current_slide_id = self._find_best_transition(slides, previous_slide)
 
             if current_slide_id is None:
@@ -233,10 +237,13 @@ class SlideshowMaker(object):
                 previous_slide = slides[current_slide_id]
                 del slides[current_slide_id]
 
+            i += 1
+
         return slideshow
 
     def _find_best_transition(self, slides, previous_slide):
         best_transition = 0
+        best_transition_tag_count = 100000
         best_slide_id = None
 
         for i, current_slide in slides.items():
@@ -247,8 +254,12 @@ class SlideshowMaker(object):
             if current_transition > best_transition:
                 best_transition = current_transition
                 best_slide_id = i
+            elif current_transition == best_transition and best_transition_tag_count > len(
+                    previous_slide.tags | current_slide.tags):
+                best_transition_tag_count = len(previous_slide.tags | current_slide.tags)
+                best_slide_id = i
 
-            if best_transition >= max_target_score:
+            if best_transition >= max_target_score:  # and best_transition_tag_count <= (max_target_score * 4) + 5:
                 break
 
         return best_slide_id

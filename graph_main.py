@@ -53,11 +53,29 @@ if __name__ == '__main__':
 
             # Build graph
             graph = build_graph(pics, pics_per_tag)
+            print('graph link count (before filtering): %s' % graph.count_links())
+            graph.break_links(lambda x, y: y.weight >= 1)
+            print('graph link count (after filtering): %s' % graph.count_links())
 
             starting_node = random.choice(pics_id)
+            starting_node_neighbours = [uid for uid, n in graph.nodes[starting_node].neighbours.items()]
+
+            # Go as far as possible
             path = crawl_graph(graph, starting_node)
 
-            for uid in path:
+            # trying to extend the initial path, going the other way
+            reverse_path = []
+            for node_uid in starting_node_neighbours:
+                a_reverse_path = crawl_graph(graph, node_uid, recursion_strategy={0: 8})
+
+                if len(reverse_path) < len(a_reverse_path):
+                    reverse_path = a_reverse_path
+
+            # Reverse as we've crawled it backward
+            reverse_path.reverse()
+
+            print('Completing the forward path with backward crawling: +%s' % len(reverse_path))
+            for uid in reverse_path + path:
                 current_output.append(Slide(pics[uid]))
 
             current_score = slideshow_score(current_output)
