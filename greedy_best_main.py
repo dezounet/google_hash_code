@@ -38,17 +38,17 @@ if __name__ == '__main__':
 
     print('Trying to sort %s H pics, %s V pics...' % (len(horizontal_pics_id), len(vertical_pics)))
 
-    # horizontal slide
-    horizontal_slides = {}
-    for i, pic in horizontal_pics.items():
-        horizontal_slides[i] = Slide(pic)
-
-    # Match vertical pics together
-    vertical_slides = merge(vertical_pics)
-
-    slides = {}
-    slides.update(horizontal_slides)
-    slides.update(vertical_slides)
+    # # horizontal slide
+    # horizontal_slides = {}
+    # for i, pic in horizontal_pics.items():
+    #     horizontal_slides[i] = Slide(pic)
+    #
+    # # Match vertical pics together
+    # vertical_slides = merge(vertical_pics)
+    #
+    # slides = {}
+    # slides.update(horizontal_slides)
+    # slides.update(vertical_slides)
 
     # Do better
     output = []
@@ -58,11 +58,10 @@ if __name__ == '__main__':
     i = 0
     while keep_going:
         try:
-            current_output = SlideshowMaker().greedy_best_make(slides)
+            current_output = SlideshowMaker().greedy_on_pics(pics)
             current_score = slideshow_score(current_output)
 
             if best_score < current_score:
-                print()
                 print('Found a better solution (+%s)' % (current_score - best_score))
                 output = current_output
                 best_score = current_score

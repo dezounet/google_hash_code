@@ -14,7 +14,7 @@ class Slide(object):
             pic_b = self.pic_b
 
         return (self.pic_a.orientation == 0 and pic_b is None) or \
-               (self.pic_a.orientation == 1 and pic_b.orientation == 1)
+               (self.pic_a.orientation == 1 and pic_b is not None and pic_b.orientation == 1)
 
     def add(self, pic_b):
         assert self.pic_a.orientation == 1

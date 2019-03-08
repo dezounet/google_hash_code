@@ -226,7 +226,7 @@ class SlideshowMaker(object):
             if i % 1000 == 0 and i != 0:
                 print('current slideshow is %s long...' % i)
 
-            current_slide_id = self._find_best_transition(slides, previous_slide)
+            current_slide_id = self._find_best_slide_transition(slides, previous_slide)
 
             if current_slide_id is None:
                 # Stop when no more slideshow found
@@ -241,21 +241,23 @@ class SlideshowMaker(object):
 
         return slideshow
 
-    def _find_best_transition(self, slides, previous_slide):
+    def _find_best_slide_transition(self, slides, previous_slide):
         best_transition = 0
         best_transition_tag_count = 100000
         best_slide_id = None
 
         for i, current_slide in slides.items():
-            max_target_score = int(len(previous_slide.tags) / 2)
+            max_target_score = max(int(len(previous_slide.tags) / 2) + 10,  # Tweek here for better result
+                                   1)
 
             current_transition = transition_score(previous_slide, current_slide)
 
             if current_transition > best_transition:
                 best_transition = current_transition
                 best_slide_id = i
-            elif current_transition == best_transition and best_transition_tag_count > len(
-                    previous_slide.tags | current_slide.tags):
+            elif current_transition != 0 and \
+                    current_transition == best_transition and \
+                    best_transition_tag_count > len(previous_slide.tags | current_slide.tags):
                 best_transition_tag_count = len(previous_slide.tags | current_slide.tags)
                 best_slide_id = i
 
@@ -263,3 +265,64 @@ class SlideshowMaker(object):
                 break
 
         return best_slide_id
+
+    def greedy_on_pics(self, pics):
+        slideshow = []
+
+        pics = copy.copy(pics)
+
+        # Randomly pick first pick
+        index = list(pics.keys())
+        starting_index = random.choice(index)
+        current_slide = Slide(pics.pop(starting_index))
+        previous_slide = None
+
+        keep_going = True
+        counter = 0
+        while keep_going:
+            if counter % 10000 == 0 and counter != 0:
+                print('currently consumed %s pics...' % counter)
+
+            if current_slide.is_valid():
+                slideshow.append(current_slide)
+                previous_slide = current_slide
+
+                current_slide_id = self._find_best_slide_transition(pics, previous_slide)
+                if current_slide_id is not None:
+                    current_slide = Slide(pics[current_slide_id])
+                    del pics[current_slide_id]
+                else:
+                    break
+            else:
+                # Find another best pic and add it to current slide
+                second_pic_id = None
+
+                if previous_slide is not None:
+                    pic_a = current_slide.pic_a
+
+                    best_transition = 0
+                    for i, pic_b in pics.items():
+                        if pic_b.orientation == 1:
+                            current_association = Slide(pic_a)
+                            current_association.add(pic_b)
+
+                            current_transition = transition_score(previous_slide, current_association)
+                            if current_transition > best_transition:
+                                best_transition = current_transition
+                                second_pic_id = i
+                else:
+                    for i, pic in pics.items():
+                        if pic.orientation == 1 and not set(current_slide.tags) & set(pic.tags):
+                            second_pic_id = i
+                            break
+
+                if second_pic_id is not None:
+                    current_slide.add(pics[second_pic_id])
+                    del pics[second_pic_id]
+                else:
+                    print('breaking at %s pics: cant find vertical match' % counter)
+                    keep_going = False
+
+            counter += 1
+
+        return slideshow
