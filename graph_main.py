@@ -53,29 +53,35 @@ if __name__ == '__main__':
 
             # Build graph
             graph = build_graph(pics, pics_per_tag)
-            print('graph link count (before filtering): %s' % graph.count_links())
-            graph.break_links(lambda x, y: y.weight >= 1)
-            print('graph link count (after filtering): %s' % graph.count_links())
 
+            path = []
             starting_node = random.choice(pics_id)
-            starting_node_neighbours = [uid for uid, n in graph.nodes[starting_node].neighbours.items()]
 
             # Go as far as possible
-            path = crawl_graph(graph, starting_node)
+            while len(path) < len(pics_id):
+                print('Crawling graph (current path=%s)...' % len(path))
+                path += crawl_graph(graph, starting_node)
 
-            # trying to extend the initial path, going the other way
-            reverse_path = []
-            for node_uid in starting_node_neighbours:
-                a_reverse_path = crawl_graph(graph, node_uid, recursion_strategy={0: 8})
+                if len(path) == len(pics_id):
+                    break
+                else:
+                    path_set = set(path)
+                    remaining_nodes = [node_id for node_id in pics_id if node_id not in path_set]
 
-                if len(reverse_path) < len(a_reverse_path):
-                    reverse_path = a_reverse_path
+                    best_starting_node = None
+                    best_starting_node_neighbour_count = 0
+                    for uid in remaining_nodes:
+                        reachable_node_count = len(graph.get_reachable_node(uid))
+                        if reachable_node_count > best_starting_node_neighbour_count:
+                            best_starting_node = uid
+                            best_starting_node_neighbour_count = reachable_node_count
 
-            # Reverse as we've crawled it backward
-            reverse_path.reverse()
+                    if best_starting_node is not None:
+                        starting_node = best_starting_node
+                    else:
+                        break
 
-            print('Completing the forward path with backward crawling: +%s' % len(reverse_path))
-            for uid in reverse_path + path:
+            for uid in path:
                 current_output.append(Slide(pics[uid]))
 
             current_score = slideshow_score(current_output)

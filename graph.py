@@ -48,10 +48,10 @@ class Graph(object):
             if best_neighbour is None:
                 best_neighbour = neighbour
                 best_neighbour_reachable_nodes = self.get_reachable_node(best_neighbour.node.uid)
-            # elif len(neighbour.node.neighbours) == 2:
-            #    # If a neighbour only has another neighbour, do not leave him alone!
-            #    best_neighbour = neighbour
-            #    break
+            elif len(neighbour.node.neighbours) == 2:
+                # If a neighbour only has another neighbour, do not leave him alone!
+                best_neighbour = neighbour
+                break
             elif len(self.get_reachable_node(neighbour.node.uid)) > len(
                     best_neighbour_reachable_nodes):
                 best_neighbour = neighbour
@@ -171,13 +171,13 @@ def crawl_graph(graph, starting_node_uid, recursion_strategy=None):
         recursion_strategy = {
             0: 2,
             5000: 2,
-            15000: 3,
-            20000: 4,
-            25000: 5,
-            30000: 6,
-            35000: 7,
-            40000: 8,
-            45000: 9,
+            15000: 2, #3
+            20000: 2, #4
+            25000: 2, #4
+            30000: 2, #5
+            35000: 2, #6
+            40000: 2, #7
+            45000: 2, #8
         }
 
     path = []
@@ -187,12 +187,7 @@ def crawl_graph(graph, starting_node_uid, recursion_strategy=None):
     keep_going = True
     i = 0
     while keep_going:
-        if i % 10 == 0:
-            # remove dead end node
-            # graph.clean_dead_end()
-            pass
-
-        if i % 2000 == 0:
+        if i % 2000 == 0 and i != 0:
             print('looking for node %s' % i)
             from collections import Counter
             occurrences = []

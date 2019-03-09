@@ -15,10 +15,10 @@ def transition_score(slide1, slide2):
     tags_slide2 = slide2.tags
     common_tags = tags_slide1 & tags_slide2
 
-    tags_only_slide1 = tags_slide1 - common_tags
-    tags_only_slide2 = tags_slide2 - common_tags
+    tags_only_slide1_count = len(tags_slide1) - len(common_tags)
+    tags_only_slide2_count = len(tags_slide2) - len(common_tags)
 
-    return min(len(tags_only_slide1), len(tags_only_slide2), len(common_tags))
+    return min(tags_only_slide1_count, tags_only_slide2_count, len(common_tags))
 
 
 def slideshow_score(list_slides):
@@ -28,12 +28,7 @@ def slideshow_score(list_slides):
     score = 0
 
     if len(list_slides) >= 2:
-        score_sequence = [transition_score(list_slides[i], list_slides[i + 1]) for i in range(len(list_slides) - 1)]
-
-        if 0 in score_sequence:
-            score = -666
-        else:
-            score = sum([transition_score(list_slides[i], list_slides[i + 1]) for i in range(len(list_slides) - 1)])
+        score = sum([transition_score(list_slides[i], list_slides[i + 1]) for i in range(len(list_slides) - 1)])
 
     return score
 

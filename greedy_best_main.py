@@ -7,9 +7,6 @@ from config import OUTPUT_DIRECTORY
 from InputReader import InputReader
 from write import write
 
-from slide import Slide
-
-from vertical_merger import merge
 from slideshow_maker import SlideshowMaker
 
 from score import get_current_best_score

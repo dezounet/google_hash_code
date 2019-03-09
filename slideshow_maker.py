@@ -242,24 +242,26 @@ class SlideshowMaker(object):
         return slideshow
 
     def _find_best_slide_transition(self, slides, previous_slide):
-        best_transition = 0
+        best_transition = -1
         best_transition_tag_count = 100000
         best_slide_id = None
 
-        for i, current_slide in slides.items():
-            max_target_score = max(int(len(previous_slide.tags) / 2) + 10,  # Tweek here for better result
-                                   1)
+        shuffled_slides = list(slides.keys())
+        random.shuffle(shuffled_slides)
+        for i in shuffled_slides:
+            max_target_score = 3 # max(int(len(previous_slide.tags) / 2) + 10,  # Tweek here for better result
+                                 #  1)
 
-            current_transition = transition_score(previous_slide, current_slide)
+            current_transition = transition_score(previous_slide, slides[i])
 
             if current_transition > best_transition:
                 best_transition = current_transition
                 best_slide_id = i
-            elif current_transition != 0 and \
-                    current_transition == best_transition and \
-                    best_transition_tag_count > len(previous_slide.tags | current_slide.tags):
-                best_transition_tag_count = len(previous_slide.tags | current_slide.tags)
-                best_slide_id = i
+            # elif current_transition != 0 and \
+            #         current_transition == best_transition and \
+            #         best_transition_tag_count > len(previous_slide.tags | current_slide.tags):
+            #     best_transition_tag_count = len(previous_slide.tags | current_slide.tags)
+            #     best_slide_id = i
 
             if best_transition >= max_target_score:  # and best_transition_tag_count <= (max_target_score * 4) + 5:
                 break
