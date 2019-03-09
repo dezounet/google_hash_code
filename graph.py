@@ -169,15 +169,15 @@ def build_graph(pics, pics_per_tag):
 def crawl_graph(graph, starting_node_uid, recursion_strategy=None):
     if recursion_strategy is None:
         recursion_strategy = {
-            0: 2,
-            5000: 2,
-            15000: 2, #3
-            20000: 2, #4
-            25000: 2, #4
-            30000: 2, #5
-            35000: 2, #6
-            40000: 2, #7
-            45000: 2, #8
+            0: 4,
+            5000: 4,
+            15000: 4, #3
+            20000: 4, #4
+            25000: 4, #4
+            30000: 4, #5
+            35000: 4, #6
+            40000: 4, #7
+            45000: 4, #8
         }
 
     path = []

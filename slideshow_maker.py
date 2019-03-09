@@ -242,26 +242,24 @@ class SlideshowMaker(object):
         return slideshow
 
     def _find_best_slide_transition(self, slides, previous_slide):
-        best_transition = -1
+        best_transition = -100000
         best_transition_tag_count = 100000
         best_slide_id = None
 
         shuffled_slides = list(slides.keys())
         random.shuffle(shuffled_slides)
         for i in shuffled_slides:
-            max_target_score = 3 # max(int(len(previous_slide.tags) / 2) + 10,  # Tweek here for better result
-                                 #  1)
+            max_target_score = 1000  # max(int(len(previous_slide.tags) / 2) + 10, 1)  # Tweek here for better result
 
             current_transition = transition_score(previous_slide, slides[i])
+            current_transition_tag_count = len(previous_slide.tags | slides[i].tags)
 
-            if current_transition > best_transition:
+            if current_transition > best_transition or \
+                    (current_transition == best_transition and \
+                     current_transition_tag_count < best_transition_tag_count):
                 best_transition = current_transition
+                best_transition_tag_count = current_transition_tag_count
                 best_slide_id = i
-            # elif current_transition != 0 and \
-            #         current_transition == best_transition and \
-            #         best_transition_tag_count > len(previous_slide.tags | current_slide.tags):
-            #     best_transition_tag_count = len(previous_slide.tags | current_slide.tags)
-            #     best_slide_id = i
 
             if best_transition >= max_target_score:  # and best_transition_tag_count <= (max_target_score * 4) + 5:
                 break
@@ -302,7 +300,7 @@ class SlideshowMaker(object):
                 if previous_slide is not None:
                     pic_a = current_slide.pic_a
 
-                    best_transition = 0
+                    best_transition = -1
                     for i, pic_b in pics.items():
                         if pic_b.orientation == 1:
                             current_association = Slide(pic_a)
